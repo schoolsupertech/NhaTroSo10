@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BusinessObjects.Models;
 
@@ -26,9 +27,10 @@ public partial class MotelManagement2024DbContext : DbContext
     //=> optionsBuilder.UseSqlServer(GetConnectionString());
     {
         var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+        var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
         var dbName = Environment.GetEnvironmentVariable("DB_NAME");
         var dbPwd = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
-        var connectionString = $"Server=host.docker.internal;Database={dbName};Uid=sa;Pwd={dbPwd};TrustServerCertificate=true;";
+        var connectionString = $"Server={dbHost},{dbPort};Database={dbName};Uid=sa;Pwd={dbPwd};TrustServerCertificate=true;";
         optionsBuilder.UseSqlServer(connectionString);
     }
 
@@ -117,6 +119,10 @@ public partial class MotelManagement2024DbContext : DbContext
                 .HasForeignKey(d => d.RoomId)
                 .HasConstraintName("FK_Members_Rooms");
         });
+
+        //modelBuilder.Entity<Member>().HasData(
+        //    new Member() { MemberId = 1, RoomId = null, FullName = "Nguyễn Lê Nhật Quỳnh", DateOfBirth = "2005-12-16", Gender = "FEMALE", IdentificationCard = "068305011114", DateOfIssue = "2021-05-13", PhoneNumber = "0325843112", Email = "quynhnln@gmail.com", PermanentAddress = "6B, đường Tôn Thất Tùng, phường 8, Thành phố Đà Lạt, tỉnh Lâm Đồng", TemporaryAddress = "10, đường số 17, khu phố 7, phường Linh Chiểu, thành phố Thủ Đức, Hồ Chí Minh", CreatedDate = DateTime.Now, UpdatedDate = null }
+        //);
 
         modelBuilder.Entity<Room>(entity =>
         {

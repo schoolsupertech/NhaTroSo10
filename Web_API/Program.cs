@@ -1,4 +1,6 @@
+using BusinessObjects.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repositories;
@@ -10,8 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
+builder.Services.AddDbContext<MotelManagement2024DbContext>(opt =>
+{
+    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+    var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+    var dbPwd = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
+    var connectionString = $"Server={dbHost},{dbPort};Database={dbName};Uid=sa;Pwd={dbPwd};TrustServerCertificate=true;";
+    opt.UseSqlServer(connectionString);
+});
 
-/*builder.Services.AddCors(o =>
+builder.Services.AddCors(o =>
 {
     o.AddPolicy("AllowAnyOrigin", corsPolicyBuilder =>
     {
@@ -19,7 +30,7 @@ builder.Services.AddControllers();
     });
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+/*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -66,12 +77,14 @@ builder.Services.AddTransient<IMemberService, MemberService>();
 // ==== Build app ==== //
 var app = builder.Build();
 
+// Migration database
+MigrationExtensions.InitialMigration(app);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    //app.UseDefaultMigrations();
 }
 
 app.UseHttpsRedirection();
