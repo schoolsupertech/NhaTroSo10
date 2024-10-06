@@ -1,0 +1,33 @@
+networks:
+  webapi_mssql_network:
+
+services:
+  web_api:
+    image: ${DOCKER_REGISTRY-}webapi
+    container_name: web_api
+    build:
+      context: .
+      dockerfile: Web_API/Dockerfile
+    environment:
+      - DB_HOST=mssql_server
+      - DB_NAME=MotelManagement2024DB
+      - DB_SA_PASSWORD=myPassw0rd
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - mssql_server
+    networks:
+      - webapi_mssql_network
+
+  mssql_server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql_server
+    hostname: mssql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=myPassw0rd
+    ports:
+      - "1433:1433"
+    networks:
+      - webapi_mssql_network
