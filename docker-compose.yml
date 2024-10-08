@@ -1,6 +1,3 @@
-networks:
-  webapi_mssql_network:
-
 services:
   web_api:
     image: ${DOCKER_REGISTRY-}webapi
@@ -18,11 +15,9 @@ services:
       - "8081:8081"
     depends_on:
       - mssql_server
-    networks:
-      - webapi_mssql_network
 
   mssql_server:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql_server
     hostname: mssql_server
     environment:
@@ -30,5 +25,9 @@ services:
       - SA_PASSWORD=myPassw0rd
     ports:
       - "1433:1433"
-    networks:
-      - webapi_mssql_network
+    volumes:
+      - sql_data_nhatroso10:/var/opt/mssql
+
+volumes:
+  sql_data_nhatroso10:
+    external: true  

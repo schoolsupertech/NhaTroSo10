@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
-builder.Services.AddDbContext<MotelManagement2024DbContext>(opt =>
+/*builder.Services.AddDbContext<MotelManagement2024DbContext>(opt =>
 {
     var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
     var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
@@ -20,7 +20,7 @@ builder.Services.AddDbContext<MotelManagement2024DbContext>(opt =>
     var dbPwd = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
     var connectionString = $"Server={dbHost},{dbPort};Database={dbName};Uid=sa;Pwd={dbPwd};TrustServerCertificate=true;";
     opt.UseSqlServer(connectionString);
-});
+});*/
 
 builder.Services.AddCors(o =>
 {
@@ -78,7 +78,7 @@ builder.Services.AddTransient<IMemberService, MemberService>();
 var app = builder.Build();
 
 // Migration database
-MigrationExtensions.InitialMigration(app);
+//MigrationExtensions.InitialMigration(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
