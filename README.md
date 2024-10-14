@@ -1,15 +1,16 @@
 # NhaTroSo10
 
 # DOCKER
-## Required Images
-- mcr.microsoft.com/mssql/server:2022-latest
-- bitnami/dotnet-sdk:8.0.402 (For build from outside `visual studio` only)
+## Require Pull Images
+- `docker pull mcr.microsoft.com/mssql/server:2022-latest`
+- `docker pull bitnami/dotnet-sdk:8.0.402` (For build from outside `visual studio` only)
+- `docker pull mcr.microsoft.com/dotnet/aspnet:8.0`
 
 ## Backup & Restore Data
 ```shell
 docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<YourPassword>" `
--p 21143:1433 --name sql_data_nhatroso10 `
--v sqlvolume:/var/opt/mssql `
+-p 21433:1433 --name sql_data_nhatroso10 `
+-v sql_data_nhatroso10:/var/opt/mssql `
 -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
@@ -29,7 +30,7 @@ Copy backup database from local drive to container ID: a03fb52ac500
 docker cp "E:\IT Software\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\Backup\MotelManagement2024DB.bak" a03fb52ac500:/var/opt/mssql/data
 ```
 
-Open SSMS (Sql Server Management Studio) and connect to the server: `localhost,21143`
+Open SSMS (Sql Server Management Studio) and connect to the server: `localhost,21433`
 
 Run the restore query:
 ```sql
@@ -42,12 +43,25 @@ NOUNLOAD, STATS = 5
 GO
 ```
 
+Check database inside docker
+
+`docker exec -it sql_data_nhatroso10 /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P myPassw0rd -C`
+```sql
+SELECT * FROM sys.databases
+GO
+```
+
+"MotelManagement2024DB" will be shown
+
 ## Docker-compose
 Create `docker-compose.yml` file and paste this code:
 ```yml
+networks:
+  webapi_mssql_network:
+
 services:
   web_api:
-    image: zenithhelios/demowebapi_3
+    image: zenithhelios/demowebapi_4
     container_name: web_api
     environment:
       - DB_HOST=mssql_server
@@ -59,15 +73,20 @@ services:
       - "8081:8081"
     depends_on:
       - mssql_server
+    networks:
+      - webapi_mssql_network
 
   mssql_server:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql_server
+    hostname: mssql_server
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=myPassw0rd
+      - SA_PASSWORD=myPassw0rd
     ports:
       - "1433:1433"
+    networks:
+      - webapi_mssql_network
     volumes:
       - sql_data_nhatroso10:/var/opt/mssql
 
