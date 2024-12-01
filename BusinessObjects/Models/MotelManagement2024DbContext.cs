@@ -34,15 +34,15 @@ public partial class MotelManagement2024DbContext : DbContext
         optionsBuilder.UseSqlServer(connectionString);
     }
 
-    //private static string GetConnectionString()
-    //{
-    //    IConfiguration config = new ConfigurationBuilder()
-    //        .SetBasePath(Directory.GetCurrentDirectory())
-    //        .AddJsonFile("appsettings.json", true, true)
-    //        .Build();
-    //    return config.GetConnectionString("DefaultConnection")
-    //        ?? throw new Exception("Connection String 'DefaultConnection' not found in appsettings.json");
-    //}
+    private static string GetConnectionString()
+    {
+        IConfiguration config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        return config.GetConnectionString("DefaultConnection")
+            ?? throw new Exception("Connection String 'DefaultConnection' not found in appsettings.json");
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

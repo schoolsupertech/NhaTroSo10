@@ -10,7 +10,6 @@ using Web_API.Extensions;
 // ==== Add services to the container ==== //
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 /*builder.Services.AddDbContext<MotelManagement2024DbContext>(opt =>
 {
@@ -71,6 +70,8 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });*/
+
+builder.WebHost.UseUrls("http://*:8080", "https://*:443");
 
 builder.Services.AddTransient<IMemberService, MemberService>();
 

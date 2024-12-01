@@ -14,8 +14,8 @@ services:
       - DB_NAME=MotelManagement2024DB
       - DB_SA_PASSWORD=myPassw0rd
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "32770:8080"
+      - "32771:443"
     depends_on:
       - mssql_server
     networks:
