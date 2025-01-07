@@ -2,6 +2,7 @@
 using BusinessObjects.Models;
 using Repositories;
 using Web_API.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace Web_API.Controllers;
 [Route("api/[controller]")]

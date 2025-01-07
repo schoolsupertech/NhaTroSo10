@@ -1,8 +1,10 @@
 using BusinessObjects.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Cors;
 using Repositories;
 using System.Text;
 using Web_API.Extensions;
@@ -10,7 +12,6 @@ using Web_API.Extensions;
 // ==== Add services to the container ==== //
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 /*builder.Services.AddDbContext<MotelManagement2024DbContext>(opt =>
 {
     var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
@@ -21,13 +22,14 @@ builder.Services.AddControllers();
     opt.UseSqlServer(connectionString);
 });*/
 
-builder.Services.AddCors(o =>
+builder.Services.AddCors(options =>
 {
-    o.AddPolicy("AllowAnyOrigin", corsPolicyBuilder =>
+    options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        corsPolicyBuilder.SetIsOriginAllowed(x => _ = true).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
 });
+builder.Services.AddControllers();
 
 /*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -43,33 +45,32 @@ builder.Services.AddCors(o =>
     };
 });*/
 
-builder.Services.AddSwaggerGen();
-
-/*builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-    option.DescribeAllParametersInCamelCase();
-    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Description = "Please enter a valid token",
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "Bearer"
-    });
-    option.AddSecurityRequirement(new OpenApiSecurityRequirement {
-        {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});*/
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Nhatroso10_API", Version = "v1" });
+    //option.DescribeAllParametersInCamelCase();
+    //option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    //{
+    //    In = ParameterLocation.Header,
+    //    Name = "Authorization",
+    //    Description = "Please enter a valid token",
+    //    Type = SecuritySchemeType.Http,
+    //    BearerFormat = "JWT",
+    //    Scheme = "Bearer"
+    //});
+    //option.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    //    {
+    //        new OpenApiSecurityScheme {
+    //            Reference = new OpenApiReference {
+    //                Type = ReferenceType.SecurityScheme,
+    //                Id = "Bearer"
+    //            }
+    //        },
+    //        Array.Empty<string>()
+    //    }
+    //});
+});
 
 builder.WebHost.UseUrls("http://*:8080", "https://*:443");
 
@@ -89,8 +90,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseRouting();
+app.UseCors("AllowSpecificOrigin");
+//app.UseAuthentication();
+//app.UseAuthorization();
 app.MapControllers();
 app.Run();

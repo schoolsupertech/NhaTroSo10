@@ -24,15 +24,7 @@ public partial class MotelManagement2024DbContext : DbContext
     public virtual DbSet<Room> Rooms { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //=> optionsBuilder.UseSqlServer(GetConnectionString());
-    {
-        var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-        var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-        var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-        var dbPwd = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
-        var connectionString = $"Server={dbHost},{dbPort};Database={dbName};Uid=sa;Pwd={dbPwd};TrustServerCertificate=true;";
-        optionsBuilder.UseSqlServer(connectionString);
-    }
+    => optionsBuilder.UseSqlServer(GetConnectionString());
 
     private static string GetConnectionString()
     {
